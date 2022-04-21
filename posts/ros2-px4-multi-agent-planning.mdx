@@ -1,0 +1,176 @@
+---
+title: Setup ROS2 and PX4 for multi-agent experimentation
+description: "How to setup ROS2, PX4, and DDS for a distributed multi-agent development environment. "
+date: April 20, 2022
+---
+
+## Introduction
+ROS2 is a powerful middleware framework that has been developed from the ground up with Data Distrubted Services (DDS) to perform communications between different aspects of your ROS2 framework. It provides a replacement to the traditional ROS1 pub/sub framework, which was developed in house. The benefits, plan and design of this are described [here](https://design.ros2.org/articles/ros_on_dds.html).
+
+PX4 is an open-source autopilot framework for development and deployment of different vehicles. It supports vehicles such as quadrotors, fixed wing aircraft, surface rovers, ROV's and USVs. 
+
+The main motivation of this blog post is to provide a reference or guide as to my setup of PX4 and ROS2 for development of multi-agent robotic enviornments, planners and simulations for my research. I hope this can serve as a guide for those in similar fields. Or at least, it will serve as a reference for me when I inevvitbly break my Ubuntu install and need to re-install everything ;)
+
+## ROS2 
+Installing ROS2 is fairly straightforward. You can follow the official documentation [Here](https://docs.ros.org/en/galactic/Installation/Ubuntu-Install-Debians.html). I work mainly with Galactic. If you are using Foxy it might be easier, as PX4 uses eProsima's Fast DDS implementation. 
+
+To get PX4 working with ROS2 Galactic, we need to install and configure Fast DDS. 
+
+Make sure you have rosdep installed, then:
+```
+sudo apt install ros-galactic-rmw-fastrtps-cpp
+```
+
+```
+export RMW_IMPLEMENTATION=rmw_fastrtps_cpp
+```
+
+You can test it out with:
+Terminal 1:
+```
+ros2 run demo_nodes_cpp listener
+```
+
+Terminal 2: 
+```
+ros2 run demo_nodes_cpp listener
+```
+
+---
+## PX4
+PX4 install is a bit more involved.
+
+### PX4 Base
+To install PX4, you can create a directory in home.
+```
+mkdir ~/px4
+```
+
+Then clone the repo, insuring you have the recursive flag
+```
+git clone https://github.com/PX4/PX4-Autopilot.git --recursive
+```
+Run the ubuntu setup bash file.
+```
+bash ./PX4-Autopilot/Tools/setup/ubuntu.sh
+```
+
+### Gradle
+I find the best way to install gradle is with SDK
+[Install SDK](https://sdkman.io/install)
+
+```
+sdk install gradle 6.3
+```
+
+### FastRTPSGen
+
+Install FastRTPSGen, this is not the same as FastDDS. 
+
+```
+git clone --recursive https://github.com/eProsima/Fast-DDS-Gen.git -b v1.0.4 ~/Fast-RTPS-Gen \
+    && cd ~/Fast-RTPS-Gen \
+    && gradle assemble \
+    && sudo env "PATH=$PATH" gradle install
+```
+
+If you get errors regarding openJDK versions, change the version that is installed in 
+`PX4-Autopilot/Tools/setup/ubuntu.sh` from version 13 to version 11, and rerun the script (ubuntu.sh) in the PX4 Base install section above. 
+
+### QGroundControl
+This is the ground control software. You can simply download the appimage. I download them into a folder called `~/app_images`
+
+[Link](http://qgroundcontrol.com/). 
+Right click the file, and click "permissions", allow it to run as an application. 
+
+## px4_ros_com and px4_msgs
+There are two packages when working with the microRTPS bridge (the PX4 ROS2 bridge) that are useful. You can create a overlay workspace with them
+
+```
+mkdir ~/px4_ros
+cd px4_ros
+mkdir src
+git clone https://github.com/PX4/px4_ros_com
+git clone https:://github.com/PX4/px4_msgs
+cd ..
+colcon build
+```
+
+**Note, close the terminal you did colcon build in, otherwise, especially before sourcing the overlay workspace, otherwise, it may cause issues**
+
+---
+
+## Testing
+There are a few different ways to make sure that you have everything setup. 
+
+### Single Agent
+First, you can confirm the microRTPS bridge is working using a single-agent.
+
+```
+cd ~/px4
+make px4_sitl_rtps gazebo_plane
+```
+
+In a new terminal
+```
+`cd ~/app_images/`
+./QGroundControl.appimage
+```
+
+In another terminal
+```
+source /opt/ros/galactic/setup.bash
+cd ~/px4_ros
+source ./install/setup.bash
+micrortps_agent -t UDP
+```
+
+In another terminal
+```
+source /opt/ros/galactic/setup.bash
+cd ~/px4_ros
+source ./install/setup.bash
+ros2 topic list
+```
+
+You should see topics related to PX4. 
+
+### Multi Agent 
+To test multi-agent (which is the real benefit of DDS), we can do the following.
+
+**Terminal 1**
+```
+cd ~/px4/PX4-Autopilot/
+git submodule update --init --recursive
+DONT_RUN=1 make px4_sitl_rtps gazebo
+```
+
+Wait to finish
+
+```./Tools/gazebo_sitl_multiple_run.sh -t px4_sitl_rtps -m iris -n 2
+```
+This runs a script which spawns 2 iris drones
+
+**Terminal 2**
+Run micrortps agent with parameters
+```
+cd ~/px4_ros_com_ros2
+source ./install/setup.bash
+micrortps_agent -t UDP -r 2020 -s 2019 -n vhcl0 & micrortps_agent -t UDP -r 2022 -s 2021 -n vhcl1
+```
+(this is one line)
+It specifies the connection to heach vehicle, the recieving UDP port (-r) and the transmitting UDP port (-t). Each vehicle is allocated a unique MAVLink system id (vhcl0, vhcl1...).  
+
+**Terminal 3**
+```
+cd ~/px4_ros_com_ros2
+source ./install/setup.bash
+ros2 topic list
+```
+
+**NOTE**: When done, always completly close terminal 2. If you get errors relating to blocked UDP ports, or ports already in use, try `killall micrortps*`, to kill any remaining micrortps processes, and try again.
+
+## Conclusion
+Hopefully, this tutorial provides you with the necessary reqsources to get your development environment up and running. PX4 is a bit confusing at times, and ROS2 errors are hard to diagnose as well. 
+
+Go back [home](/).
