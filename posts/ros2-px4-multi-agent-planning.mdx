@@ -41,15 +41,19 @@ PX4 install is a bit more involved.
 
 ### PX4 Base
 To install PX4, you can create a directory in home.
+
 ```
 mkdir ~/px4
 ```
 
 Then clone the repo, insuring you have the recursive flag
+
 ```
 git clone https://github.com/PX4/PX4-Autopilot.git --recursive
 ```
+
 Run the ubuntu setup bash file.
+
 ```
 bash ./PX4-Autopilot/Tools/setup/ubuntu.sh
 ```
@@ -145,17 +149,20 @@ DONT_RUN=1 make px4_sitl_rtps gazebo
 
 Wait to finish
 
-```./Tools/gazebo_sitl_multiple_run.sh -t px4_sitl_rtps -m iris -n 2
+```
+./Tools/gazebo_sitl_multiple_run.sh -t px4_sitl_rtps -m iris -n 2
 ```
 This runs a script which spawns 2 iris drones
 
 **Terminal 2**
 Run micrortps agent with parameters
+
 ```
 cd ~/px4_ros_com_ros2
 source ./install/setup.bash
 micrortps_agent -t UDP -r 2020 -s 2019 -n vhcl0 & micrortps_agent -t UDP -r 2022 -s 2021 -n vhcl1
 ```
+
 (this is one line)
 It specifies the connection to heach vehicle, the recieving UDP port (-r) and the transmitting UDP port (-t). Each vehicle is allocated a unique MAVLink system id (vhcl0, vhcl1...).  
 
