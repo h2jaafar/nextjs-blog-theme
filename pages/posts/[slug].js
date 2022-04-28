@@ -52,11 +52,9 @@ export default function PostPage({
           )}
         </header>
         <main>
-          <div className="wrapper">
-            <article className="prose dark:prose-dark">
+            <article className="wrapper prose dark:prose-dark">
               <MDXRemote {...source} components={components} />
             </article>
-          </div>
         </main>
         <div className="grid md:grid-cols-2 lg:-mx-24 mt-12">
           {prevPost && (
