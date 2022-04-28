@@ -16,7 +16,7 @@
   max-height: 800px;
   height: 80vh;
   max-width: 1400px;
-  width: 60vw;
+  width: 70vw;
   width: 100%;
   filter: blur(44px);
   z-index: -1;
@@ -39,8 +39,12 @@
   /* mix-blend-mode: normal; */
   height: 600px;
   max-width: 900px;
-  width: 45vw;
+  width: 55vw;
   width: 100%;
   filter: blur(44px);
   z-index: -1;
+}
+
+.wrapper {
+  max-width: 90%;
 }
