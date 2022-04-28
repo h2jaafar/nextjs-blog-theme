@@ -1,0 +1,49 @@
+---
+title: Useful Development Tools for Robotics
+description: "Some useful robotics tools, applications and ideas for robotic development"
+date: April 26, 2022
+---
+
+The current state of robotics is everchanging. It seems as if every week a new framework is developed, or a new sensor technology is released.
+Developing anything useful in this foggy labyrinth of README and outdated packages is difficult, however, there is a partial solution.
+I urge all new robotic devs to really try and optimize their workflows. This is something that needs to be instilled into their everyday lives. 
+Maybe it is the engineering ergonomics course I took speaking here, but, in my opinion, optimzing the development process is almost, if not more beatiful than the finished product. 
+
+So this blog post serves to provide a few guidlines, tips and tools for achieving this harmonious toolset. 
+
+# 1. Notes. Notes. Notes.
+My mantra is, if you think you might repeat a process, write it down. If you encounter an issue, write it down. If you think of a possible solution, write it down. 
+Too many times have I fixed a bug, or solved a problem (typically when installing software), only to encounter the same problem in a couple months time when setting up on a new machine. 
+The worst part is you will remember "Hey, this isn't so bad, I remember I encountered this problem before". Only to rack your brain and not remember the solution. 
+This is not to mention all the benefits of being organized, which I will not delve into. 
+
+So you're on board; but how do you write these notes. You have a couple options.
+
+## Markdown
+This is the option I recommend to most; use an application such as [Joplin](https://joplinapp.org/), which is a cross-platform markdown based note taking app.
+Markdown is nice because you can quickly format your notes, without wasting time fiddling with font styles and heading weights.
+There are also other tools that can save your markdown notes, or you could be cool and write them with VIM while using rclone to save to the cloud. 
+
+## LaTeX
+While LaTeX is amazing, I don't think it would be a good idea for the type of note taking I am pushing; spontaneous, quick and dirty. 
+However, if you are skilled in LaTeX (which is good for any roboticist), you may be able to do this with some macros and code packages. 
+
+## Pen and Paper
+I mean, you can do this, but why. You can't format code, add pictures, etc. While it is nice to every once and a while scribble down some notes on pen and paper, I wouldn't recommend it for organizing your past problems and solutions. 
+
+# 2. Terminal Managment
+This section is more targeted towards ROS/ROS2 developers. With ROS/ROS2, you will notice that you quickly accumulate a non-trivial amount of terminals, all open at the same time, all doing their own thing. This can get rather messy,
+especially on smaller resolution screens. When I realized this, I knew there had to be a better way, and there was. Actually, there are a few. I mainly use [Terminator](https://terminator-gtk3.readthedocs.io/en/latest/#) (not the movies)
+
+Terminator allows you to split your terminal window into as many segments as you desire, while also providing shortcuts for navigating between them. It is really useful, even for non-ROS development. See the above documenation for more information.
+
+# 3. Get good at command line tools
+This goes without saying, but skills with command line based tools such as VIM, ImageMagick, or even just basic unix commands are going to become essential times savers.
+This is also important when you are using SSH to remote connect into research servers, or offboard computers. Some basic networking skills is also helpful, an understanding of ports, UDP and TCP connections etc. 
+
+There are a pleathora of resources online, which will explain these 10^^3 times better than myself, so feel free to reference them.
+
+# Conclusion
+These are only a select few tips and tricks, but I hope they will come in handy for anyone interested in them. I will continue to update this with any new tools I add into my collection. 
+
+Go back [home](/).
